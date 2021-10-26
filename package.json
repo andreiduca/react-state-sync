@@ -1,0 +1,50 @@
+{
+  "name": "react-state-sync",
+  "version": "1.0.0",
+  "description": "A custom React hook for synchronized state",
+  "keywords": [
+    "synchronized",
+    "state",
+    "management",
+    "react",
+    "hooks",
+    "reactjs",
+    "custom-hook",
+    "react-hook",
+    "react-hooks"
+  ],
+  "author": {
+    "name": "Andrei Duca",
+    "email": "duca.andrei@gmail.com"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andreiduca/react-state-sync.git"
+  },
+  "bugs": "https://github.com/andreiduca/react-state-sync/issues",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./lib && tsc",
+    "test": "jest --verbose --coverage"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-typescript": "^7.9.0",
+    "@testing-library/dom": "8",
+    "@testing-library/react-hooks": "^7.0.1",
+    "@types/jest": "27",
+    "@types/react": "16 || 17",
+    "@types/react-dom": "16 || 17",
+    "babel-jest": "27",
+    "jest": "27",
+    "react": "16 || 17 || 18",
+    "react-test-renderer": "16 || 17",
+    "typescript": "4"
+  },
+  "peerDependencies": {
+    "react": "16 || 17 || 18"
+  }
+}
