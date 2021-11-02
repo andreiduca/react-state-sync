@@ -91,6 +91,17 @@ describe('createSyncState', () => {
       expect(stateB.current).toBe(stateA.current);
       expect(stateC.current).toBe(stateA.current);
     });
+
+    it('call the init callback', () => {
+      const initCallback = jest.fn();
+
+      createSyncState({
+        defaultValue: 0,
+        onInit: initCallback,
+      });
+
+      expect(initCallback).toHaveBeenCalledWith(0);
+    });
   });
 
   describe('persistence to a storage layer', () => {
@@ -135,17 +146,21 @@ describe('createSyncState', () => {
     });
 
     it('initialize with value from storage', () => {
+      const initCallback = jest.fn();
+
       global.window.localStorage.setItem('test', JSON.stringify('bar'));
 
       const { useSyncValue } = createSyncState({
         defaultValue: 'foo',
         key: 'test',
         storage: global.window.localStorage,
+        onInit: initCallback,
       });
 
       const { result } = renderHook(() => useSyncValue());
 
       expect(result.current).toStrictEqual('bar');
+      expect(initCallback).toHaveBeenCalledWith('bar');
     });
 
     it('use custom serializer and deserializer', () => {

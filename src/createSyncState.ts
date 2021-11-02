@@ -6,6 +6,7 @@ interface SyncStateOptions<ValueType> {
   storage?: Storage | false;
   serialize?: (value: ValueType) => string;
   deserialize?: (stringValue: string | null) => ValueType | null;
+  onInit?: (value: ValueType) => void;
 }
 
 export function createSyncState<ValueType>({
@@ -14,6 +15,7 @@ export function createSyncState<ValueType>({
   storage,
   serialize = JSON.stringify,
   deserialize = stringValue => JSON.parse(stringValue || 'null'),
+  onInit,
 }: SyncStateOptions<ValueType>) {
   if (storage instanceof Storage && !key) {
     throw new Error('You must specify a key to use local storage.');
@@ -51,6 +53,9 @@ export function createSyncState<ValueType>({
 
   // an updated local copy of the value
   let value = getInitialValue();
+
+  // call the initialize callback
+  onInit?.(value);
 
   // an event listener to respond to external storage updates
   function storageEventListener(storageEvent: StorageEvent) {
