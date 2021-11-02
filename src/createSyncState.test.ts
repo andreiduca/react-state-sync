@@ -134,7 +134,21 @@ describe('createSyncState', () => {
       expect(global.window.localStorage.getItem('test')).toStrictEqual('2');
     });
 
-    it('should use custom serializer and deserializer', () => {
+    it('initialize with value from storage', () => {
+      global.window.localStorage.setItem('test', JSON.stringify('bar'));
+
+      const { useSyncValue } = createSyncState({
+        defaultValue: 'foo',
+        key: 'test',
+        storage: global.window.localStorage,
+      });
+
+      const { result } = renderHook(() => useSyncValue());
+
+      expect(result.current).toStrictEqual('bar');
+    });
+
+    it('use custom serializer and deserializer', () => {
       const { setSyncValue: setCustomSync } = createSyncState({
         defaultValue: { id: 1 },
         key: 'test/custom',
@@ -156,7 +170,7 @@ describe('createSyncState', () => {
       global.window.localStorage.clear();
     });
 
-    it('should listen to storage layer updates', () => {
+    it('listen to storage layer updates', () => {
       const { useSyncValue } = createSyncState({
         defaultValue: { id: 1 },
         key: 'test/json',
@@ -207,7 +221,7 @@ describe('createSyncState', () => {
       expect(IdState.current).toStrictEqual(2);
     });
 
-    it('should listen to updates with custom serializers', () => {
+    it('listen to updates with custom serializers', () => {
       const { useSyncValue } = createSyncState({
         defaultValue: { name: 'foo' },
         key: 'test/custom',
@@ -260,7 +274,7 @@ describe('createSyncState', () => {
       expect(firstCharState.current).toStrictEqual('b');
     });
 
-    it('should not respond to unrelated window events', () => {
+    it('do not respond to unrelated window events', () => {
       const { useSyncValue } = createSyncState({
         defaultValue: 'foo',
         key: 'test',

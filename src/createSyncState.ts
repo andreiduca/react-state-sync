@@ -34,11 +34,23 @@ export function createSyncState<ValueType>({
     }
   }
 
-  // save the initial (default) value to the storage layer
-  persistToStorage(defaultValue);
+  // a function to initialize the value, wither from storage, or from the code default
+  function getInitialValue() {
+    if (storage && key) {
+      const storageValue = deserialize(storage.getItem(key));
+      if (storageValue !== null) {
+        return storageValue;
+      }
+    }
 
-  // an updated local copy of the value, initialized with the default
-  let value = defaultValue;
+    // save the initial (default) value to the storage layer
+    persistToStorage(defaultValue);
+
+    return defaultValue;
+  }
+
+  // an updated local copy of the value
+  let value = getInitialValue();
 
   // an event listener to respond to external storage updates
   function storageEventListener(storageEvent: StorageEvent) {
