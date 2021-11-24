@@ -17,7 +17,7 @@ export function createSyncState<ValueType>({
   deserialize = stringValue => JSON.parse(stringValue || 'null'),
   onInit,
 }: SyncStateOptions<ValueType>) {
-  if (storage instanceof Storage && !key) {
+  if (storage && !key) {
     throw new Error('You must specify a key to use local storage.');
   }
 
