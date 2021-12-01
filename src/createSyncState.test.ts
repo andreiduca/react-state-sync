@@ -2,6 +2,12 @@ import { act, renderHook } from '@testing-library/react-hooks';
 
 import { createSyncState } from './createSyncState';
 
+function wait(timeoutMs: number) {
+  return new Promise((res) => {
+    setTimeout(res, timeoutMs);
+  });
+}
+
 describe('createSyncState', () => {
   describe('simple state management', () => {
     it('create a new state', () => {
@@ -102,6 +108,21 @@ describe('createSyncState', () => {
 
       expect(initCallback).toHaveBeenCalledWith(0);
     });
+
+    it('call the update callback', async () => {
+      const updateCallback = jest.fn();
+
+      const { setSyncValue } = createSyncState({
+        defaultValue: 0,
+        onUpdate: updateCallback,
+      });
+
+      expect(updateCallback).not.toHaveBeenCalled();
+
+      act(() => setSyncValue(1));
+      await wait(1);
+      expect(updateCallback).toHaveBeenCalledWith(1);
+    });
   });
 
   describe('persistence to a storage layer', () => {
@@ -129,7 +150,7 @@ describe('createSyncState', () => {
       expect(global.window.localStorage.getItem('test')).toStrictEqual('0');
     });
 
-    it('update a value to the storage layer', () => {
+    it('update a value to the storage layer', async () => {
       const { useSyncValue, setSyncValue } = createSyncState({
         defaultValue: 1,
         key: 'test',
@@ -138,10 +159,12 @@ describe('createSyncState', () => {
 
       const { result } = renderHook(() => useSyncValue());
       expect(result.current).toStrictEqual(1);
+      await wait(1);
       expect(global.window.localStorage.getItem('test')).toStrictEqual('1');
 
       act(() => { setSyncValue(2); });
       expect(result.current).toStrictEqual(2);
+      await wait(1);
       expect(global.window.localStorage.getItem('test')).toStrictEqual('2');
     });
 
@@ -163,8 +186,8 @@ describe('createSyncState', () => {
       expect(initCallback).toHaveBeenCalledWith('bar');
     });
 
-    it('use custom serializer and deserializer', () => {
-      const { setSyncValue: setCustomSync } = createSyncState({
+    it('use custom serializer and deserializer', async () => {
+      const { setSyncValue } = createSyncState({
         defaultValue: { id: 1 },
         key: 'test/custom',
         storage: global.window.localStorage,
@@ -175,7 +198,8 @@ describe('createSyncState', () => {
       });
 
       expect(global.window.localStorage.getItem('test/custom')).toStrictEqual('1');
-      act(() => { setCustomSync({ id: 2 }); });
+      act(() => { setSyncValue({ id: 2 }); });
+      await wait(1);
       expect(global.window.localStorage.getItem('test/custom')).toStrictEqual('2');
     });
   });

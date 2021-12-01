@@ -7,6 +7,7 @@ interface SyncStateOptions<ValueType> {
   serialize?: (value: ValueType) => string;
   deserialize?: (stringValue: string | null) => ValueType | null;
   onInit?: (value: ValueType) => void;
+  onUpdate?: (value: ValueType) => void;
 }
 
 export function createSyncState<ValueType>({
@@ -16,6 +17,7 @@ export function createSyncState<ValueType>({
   serialize = JSON.stringify,
   deserialize = stringValue => JSON.parse(stringValue || 'null'),
   onInit,
+  onUpdate,
 }: SyncStateOptions<ValueType>) {
   if (storage && !key) {
     throw new Error('You must specify a key to use local storage.');
@@ -84,7 +86,9 @@ export function createSyncState<ValueType>({
       value = newValue;
     }
     callUpdaters(value);
-    persistToStorage(value);
+    // low priority
+    setTimeout(() => onUpdate?.(value), 0);
+    setTimeout(() => persistToStorage(value), 0);
   }
 
   type ValueMapper<MappedType> = (originalValue: ValueType) => MappedType;
