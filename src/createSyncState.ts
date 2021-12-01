@@ -29,6 +29,7 @@ export function createSyncState<ValueType>({
   // a function to call all registered updaters with the new value
   function callUpdaters(newValue: ValueType) {
     updaters.forEach((updater) => updater(newValue));
+    onUpdate?.(value);
   }
 
   // a function to persist the serialized value to storage
@@ -87,7 +88,6 @@ export function createSyncState<ValueType>({
     }
     callUpdaters(value);
     // low priority
-    setTimeout(() => onUpdate?.(value), 0);
     setTimeout(() => persistToStorage(value), 0);
   }
 

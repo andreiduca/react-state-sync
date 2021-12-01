@@ -120,7 +120,6 @@ describe('createSyncState', () => {
       expect(updateCallback).not.toHaveBeenCalled();
 
       act(() => setSyncValue(1));
-      await wait(1);
       expect(updateCallback).toHaveBeenCalledWith(1);
     });
   });
@@ -210,10 +209,13 @@ describe('createSyncState', () => {
     });
 
     it('listen to storage layer updates', () => {
+      const updateCallback = jest.fn();
+
       const { useSyncValue } = createSyncState({
         defaultValue: { id: 1 },
         key: 'test/json',
         storage: global.window.localStorage,
+        onUpdate: updateCallback,
       });
 
       const { result: stateA } = renderHook(() => useSyncValue());
@@ -240,6 +242,7 @@ describe('createSyncState', () => {
       expect(stateA.current).toStrictEqual({ id: 2 });
       expect(stateB.current).toStrictEqual({ id: 2 });
       expect(IdState.current).toStrictEqual(2);
+      expect(updateCallback).toHaveBeenCalledWith({ id: 2 });
 
       act(() => {
         global.window.dispatchEvent(new StorageEvent(
@@ -258,6 +261,7 @@ describe('createSyncState', () => {
       expect(stateA.current).toStrictEqual({ id: 2 });
       expect(stateB.current).toStrictEqual({ id: 2 });
       expect(IdState.current).toStrictEqual(2);
+      expect(updateCallback).toBeCalledTimes(1);
     });
 
     it('listen to updates with custom serializers', () => {
